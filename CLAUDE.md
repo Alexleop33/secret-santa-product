@@ -56,6 +56,13 @@ Do not reopen these without saying plainly that you are reopening them:
 
 - **No family PII.** No names, addresses, or phone numbers for referred
   households, ever. This removes most of the project's risk.
+- **Both repos are public, on purpose.** It's a forcing function: if it would
+  be embarrassing in a public repo, the system shouldn't hold it. Nothing
+  scary in source control — no real data, no secrets, no prod dumps. Sandbox
+  data stays separate from prod.
+- **Personal repos, no org.** `type:*` labels stand in for Issue Types;
+  Story → Epic links are manual (Parent Story field + the Project's Story
+  field). Settled — don't re-propose the org.
 - Caseworker and donor emails are fine — needed for login, low sensitivity.
 - Payments, if any, go through a **Stripe link**. We never touch card data.
 - Data model is **campaign-first**. No `organizations` table above campaigns.
@@ -80,5 +87,8 @@ Still open and gating work: [docs/open-questions.md](docs/open-questions.md).
   `Stage` field instead.
 - `Stage`: Discovery → Ready → In Progress → In Review → UAT → Done.
 - Issue Types (Epic/Story/Task) are org-only, so we use `type:*` labels.
+- Cross-repo sub-issues need an org we don't have. An Epic records its parent
+  by **URL** in its Parent Story field, and both items get the Project's
+  **Story** text field set to match. Manual, and that's the accepted cost.
 
 Common commands live in [docs/gh-cheatsheet.md](docs/gh-cheatsheet.md).

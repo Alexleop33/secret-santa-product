@@ -79,3 +79,48 @@ exception queue.
 
 **Defer:** photo upload, co-sponsorship/splitting, thank-you note relay, SMS,
 in-app messaging.
+
+---
+
+### 2026-09-20 · Repos stay public — and that's a forcing function
+
+Both repos are public and stay public.
+
+**Why:** not convenience. It's a constraint we're choosing on purpose. If a
+public repo would be embarrassing, the system shouldn't hold that data in the
+first place. Public SCM makes "no PII" enforceable instead of aspirational —
+you can't quietly let a phone number creep into a seed file.
+
+**What this commits us to:**
+
+- **Nothing scary in source control.** No real household data, no real donor
+  emails, no secrets, no production dumps, no `.env`. Seed and fixture data is
+  synthetic and obviously fake.
+- **Sandbox data stays separate from prod.** Different projects/keys, and
+  nothing from prod ever gets copied down to develop against.
+- **Product-side prevention, not just policy.** The referral form has to make
+  it hard for a caseworker or coordinator to type a name, address, or phone
+  in the first place — field design, placeholder text, and validation, not a
+  paragraph in a training doc. *Needs a Story of its own.*
+
+The last one is the real work. The first two are just discipline.
+
+---
+
+### 2026-09-20 · Staying on personal repos — resolved
+
+No GitHub org. Both repos stay under `Alexleop33/`.
+
+**What we give up:** cross-repo sub-issues, org-level Issue Types
+(Epic/Story/Task as real types), and automatic Story → Epic rollup.
+
+**The workaround, which is now the process:**
+
+1. `type:*` labels stand in for Issue Types.
+2. An Epic records its parent by URL in the **Parent Story** field.
+3. The Project's **Story** text field is set to match on both items.
+
+It's manual. Accepted deliberately: seven weeks, one engineer, and the
+migration cost isn't worth it for a hierarchy one person is maintaining.
+
+Revisit only if a second engineer joins.
