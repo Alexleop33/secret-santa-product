@@ -35,11 +35,12 @@ esac
 say "Repos"
 for repo in "$PRODUCT" "$PLATFORM"; do
   if gh repo view "$repo" >/dev/null 2>&1; then
-    vis=$(gh api "repos/$repo" --jq '.private | if . then "private" else "PUBLIC" end')
-    echo "  exists: $repo ($vis)"
-    [ "$vis" = "PUBLIC" ] && warn "  ^ public. Flip with: gh repo edit $repo --visibility private"
+    # Public is deliberate — see docs/decisions.md. Warn on the opposite.
+    vis=$(gh api "repos/$repo" --jq 'if .private then "private" else "public (by design)" end')
+    echo "  exists: $repo — $vis"
+    case "$vis" in private) warn "  ^ expected public. See docs/decisions.md." ;; esac
   else
-    gh repo create "$repo" --private --add-readme --description "Sub for Santa"
+    gh repo create "$repo" --public --add-readme --description "Sub for Santa"
     echo "  created: $repo"
   fi
 done
@@ -108,13 +109,13 @@ fi
 # ─── Manual steps ─────────────────────────────────────────
 cat <<EOF
 
-▸ Four things with no worthwhile CLI equivalent
+▸ Three things with no worthwhile CLI equivalent
 
   1. Project → ⋯ → Workflows → enable "Auto-add to project" for BOTH repos.
      Without this you'll add items by hand and stop doing it by week two.
   2. Project → Settings → set Stage's default to Discovery.
-  3. Confirm repo visibility (see warnings above, if any).
-  4. Decide the org question — docs/open-questions.md, item 1.
+  3. Delete GitHub's stock labels if they bother you — \`bug\` and
+     \`enhancement\` overlap \`type:bug\` and muddy the taxonomy.
 
   Board: https://github.com/users/$OWNER/projects/$PROJECT_NUMBER
 
