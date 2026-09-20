@@ -1,0 +1,7 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Engineering work (Epics, Tasks, bugs)
+    url: https://github.com/Alexleop33/secret-santa-platform/issues/new/choose
+    about: >
+      Code lives in the platform repo. Open Epics and Tasks there, linked back
+      to a Story here. This repo is for Stories and decisions only.

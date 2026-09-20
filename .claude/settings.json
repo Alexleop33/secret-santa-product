@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh issue list:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh label list:*)",
+      "Bash(gh project list:*)",
+      "Bash(gh project item-list:*)",
+      "Bash(gh project field-list:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh search issues:*)",
+      "Bash(gh auth status)",
+      "Bash(git status:*)",
+      "Bash(git log:*)",
+      "Bash(git diff:*)"
+    ],
+    "deny": []
+  }
+}

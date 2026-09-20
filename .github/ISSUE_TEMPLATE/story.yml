@@ -1,0 +1,65 @@
+name: Story
+description: A user-facing outcome. Product discipline. No implementation detail.
+title: "[Story] "
+labels: ["type:story", "needs:ready"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Outcome
+      description: One sentence. Who, and what they can now do.
+      placeholder: A caseworker can submit a household referral without emailing anyone.
+    validations: { required: true }
+  - type: textarea
+    id: why
+    attributes:
+      label: Why this matters
+      description: What breaks, or stays painful, if we don't build it.
+    validations: { required: true }
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      description: >
+        Observable behaviour only. These become the UAT checklist verbatim,
+        so write them for someone who has never seen the code.
+    validations: { required: true }
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Explicitly not in this Story
+      description: >
+        The most useful box on this form. Naming what you're NOT doing is how
+        a Story stays small enough to finish.
+    validations: { required: true }
+  - type: dropdown
+    id: size
+    attributes:
+      label: Rough size
+      options: ["S — one sitting", "M — a few sittings", "L — needs splitting"]
+    validations: { required: true }
+  - type: dropdown
+    id: milestone
+    attributes:
+      label: Which deadline does this serve?
+      options:
+        - Nov 6 — nominations close
+        - Nov 30 — claims close
+        - Dec 14 — gifts due
+        - After the drive
+    validations: { required: true }
+  - type: checkboxes
+    id: ready
+    attributes:
+      label: Definition of Ready
+      description: Remove `needs:ready` only when all are true.
+      options:
+        - label: Acceptance criteria are observable, not internal
+        - label: Out-of-scope is filled in honestly
+        - label: No family PII is involved, or it's flagged below
+        - label: Someone other than the author has read it
+  - type: textarea
+    id: risk
+    attributes:
+      label: Anything touching PII, payments, or deletion?
+      description: Blank if no. If yes, say what — this gets a closer review.

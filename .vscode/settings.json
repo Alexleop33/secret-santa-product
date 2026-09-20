@@ -1,0 +1,17 @@
+{
+  "window.title": "🎁 PRODUCT — ${activeEditorShort}${separator}${rootName}",
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#0E8A16",
+    "titleBar.activeForeground": "#FFFFFF",
+    "titleBar.inactiveBackground": "#0E8A1699",
+    "titleBar.inactiveForeground": "#FFFFFFCC",
+    "statusBar.background": "#0B6E11",
+    "statusBar.foreground": "#FFFFFF",
+    "activityBar.background": "#0B6E11",
+    "activityBar.foreground": "#FFFFFF"
+  },
+  "files.associations": { "*.yml": "yaml" },
+  "editor.rulers": [80],
+  "markdown.preview.breaks": true,
+  "git.autofetch": true
+}

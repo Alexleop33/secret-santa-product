@@ -1,0 +1,34 @@
+name: Decision needed
+description: A question that blocks work and isn't yours alone to answer.
+title: "[Decision] "
+labels: ["type:decision", "blocked"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: One sentence, answerable.
+    validations: { required: true }
+  - type: textarea
+    id: blocks
+    attributes:
+      label: What is blocked until this is answered?
+    validations: { required: true }
+  - type: textarea
+    id: options
+    attributes:
+      label: The options, and the tradeoff
+      description: Two or three. What each one costs.
+    validations: { required: true }
+  - type: input
+    id: who
+    attributes:
+      label: Who decides?
+      placeholder: Alex / mom / whoever handles the org's books
+    validations: { required: true }
+  - type: input
+    id: by-when
+    attributes:
+      label: Needed by
+      placeholder: 2026-10-10
+    validations: { required: true }
