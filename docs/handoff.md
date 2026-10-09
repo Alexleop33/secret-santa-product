@@ -102,20 +102,29 @@ design, worse demo. She should know the app won't tell anyone where to drive.
 
 ---
 
-## 5. Proposed stack
+## 5. Stack
 
-Nothing here is committed; it's a starting recommendation.
-
-- **Supabase** — Postgres, Auth, Row Level Security. Alex has prior exposure.
+- **SQLite** — one local file, no service in the loop. Replaced Supabase on
+  2026-09-23 so Alex can run and test alone; see
+  [decisions.md](decisions.md). Provisional — it does not yet decide where
+  data lives in December.
 - **React + Vite** front end. Alex has built a React PWA before.
 - **DigitalOcean** via GitHub Actions, per Alex's stated intent.
 
 Rules regardless of stack:
 
-- Never roll our own auth, sessions, or password storage.
+- Never roll our own auth, sessions, or password storage. SQLite provides
+  none of these, so where login comes from is now
+  [open question 10](open-questions.md).
 - Donors sign in by emailed magic link. No donor passwords anywhere.
-- RLS on every table from the first migration. Default deny, then open
-  specific paths. No table ships without a policy and a test proving denial.
+- **Default deny, enforced in one place.** Without Postgres there is no RLS.
+  Every read and write goes through a single server-side data module that
+  takes the acting user and scopes the query to them. No table ships without
+  a test proving the wrong user gets nothing back. Same requirement as RLS,
+  one layer up, and now our job rather than the database's.
+- **Portable SQL only.** No SQLite-only syntax, no JSON blobs where columns
+  belong, dates as ISO strings. If this has to become Postgres in October
+  that should cost a week, not a rewrite.
 - No PII in URLs, query strings, or logs.
 - **The app must never be the single point of failure.** If it breaks in
   December, mom must be able to fall back to a spreadsheet and still get gifts
@@ -209,8 +218,9 @@ A slice = schema + policy + API + UI + a test, for one user action. Not
 ## 7. How to work with Alex
 
 - Plain language and diagrams over jargon. Stated preference.
-- Assume React familiarity and some Supabase exposure. Don't assume depth in
-  SQL, backend architecture, or RLS.
+- Assume React familiarity. There's some Supabase exposure, but that's no
+  longer the stack. Don't assume depth in SQL, backend architecture, or
+  access-control design.
 - **Spec before code.** Every change starts as a short written spec: what
   changes, why, what could break, how we'll know it worked. Wait for approval.
 - **Never hand over code Alex can't explain.** After each slice, explain it

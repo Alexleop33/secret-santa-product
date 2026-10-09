@@ -125,3 +125,38 @@ It's manual. Accepted deliberately: seven weeks, one engineer, and the
 migration cost isn't worth it for a hierarchy one person is maintaining.
 
 Revisit only if a second engineer joins.
+
+---
+
+### 2026-09-23 · SQLite instead of Supabase — for now
+
+The database is a plain SQLite file. No Supabase project, no hosted Postgres,
+nothing to sign into in order to run the app.
+
+**Why:** Alex wants to run and test the whole thing alone, on one machine,
+with no external service in the loop. For this scale — a handful of
+caseworkers, one coordinator, thirty to three hundred households — SQLite is
+a correct choice, not a compromise. It will not be the thing that breaks.
+
+**This one is provisional and says so.** It is scoped to "for now"
+deliberately. It does not decide where data lives in December.
+
+**What Supabase was carrying that SQLite does not:**
+
+1. **Auth.** Magic-link login came free with it. SQLite has no users, no
+   sessions, no password reset. The locked rule — *never roll our own auth* —
+   still stands, so phase one runs on a dev-only "sign in as" switcher that
+   must be impossible to enable in a production build, and the real answer is
+   [open question 10](open-questions.md).
+2. **Row Level Security.** SQLite has no policies, so "RLS on every table,
+   default deny, a test proving denial" cannot be implemented as written.
+   **Replacement rule:** every read and write goes through one server-side
+   data module that takes the acting user and scopes the query to them. No
+   table ships without a test proving the wrong user gets nothing back. Same
+   requirement, one layer up, and now our job rather than the database's.
+
+**Keep the escape hatch cheap.** Portable SQL only — no SQLite-only syntax,
+no JSON blobs where columns belong, dates as ISO strings.
+
+**Revisit when:** the donor side starts (donors need real logins), or before
+anything holds real data in production — whichever comes first.

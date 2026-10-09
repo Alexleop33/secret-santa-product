@@ -66,6 +66,10 @@ Do not reopen these without saying plainly that you are reopening them:
 - Caseworker and donor emails are fine — needed for login, low sensitivity.
 - Payments, if any, go through a **Stripe link**. We never touch card data.
 - Data model is **campaign-first**. No `organizations` table above campaigns.
+- **SQLite, not Supabase.** One local file so Alex can run and test alone.
+  Marked "for now" on purpose — but don't re-propose Supabase unprompted.
+  Auth and RLS came with Supabase and do not come with SQLite; the
+  replacement rules are in [docs/decisions.md](docs/decisions.md).
 - **No photos.** Cut deliberately — see [docs/decisions.md](docs/decisions.md).
 
 Full list with reasoning: [docs/decisions.md](docs/decisions.md).
