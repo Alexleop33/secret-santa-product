@@ -199,19 +199,24 @@ ship list, and what the 2026-10-04 meeting had left as the default.
 
 The flow:
 
-1. A provider tells the admin, outside the app, that a household should be
-   included.
-2. The admin generates a link for that household and sends it. The provider
-   may pass it along, and may sit with the family while they fill it in.
+1. ~~A provider tells the admin, outside the app, that a household should be
+   included.~~
+2. ~~The admin generates a link for that household and sends it. The provider
+   may pass it along, and may sit with the family while they fill it in.~~
 3. The household submits the form themselves.
 4. The link is single-use, specific to that household, and dead after use.
 
 **Why:** if a therapist types a client's details into our system, we are
 handling health-adjacent information on a provider's behalf. If the family
-types it themselves, we aren't. The provider never touches the app.
+types it themselves, we aren't. ~~The provider never touches the app.~~
 
-**Consequence 1 — providers are not users.** No provider login, no provider
-screens, no provider table. The prototype's whole caseworker persona is gone.
+~~**Consequence 1 — providers are not users.** No provider login, no provider
+screens, no provider table. The prototype's whole caseworker persona is gone.~~
+
+> **Revised 2026-10-09** — steps 1–2 and Consequence 1 are reversed: the
+> provider makes the link, from their own account. See *Providers get
+> accounts* and *Providers create the family links* below. Steps 3–4, the
+> reason, and Consequence 2 all stand.
 
 **Consequence 2 — PII prevention just got harder.** The "make it awkward to
 type a name" problem was written with a trained caseworker in mind. Now the
@@ -219,27 +224,33 @@ person typing is a parent describing their own kids, who will naturally write
 "my son Marcus." Field design matters more, not less. Still needs its own
 Story ([open question 9](open-questions.md)).
 
-Form fields agreed so far: household size, number of children, each child's
-age and pronouns, the story, how long they have been a client, wish list.
+~~Form fields agreed so far: household size, number of children, each child's
+age and pronouns, the story, how long they have been a client, wish list.~~
+
+> **Superseded 2026-10-09** — see *What each party types in* below.
 
 ---
 
-### 2026-10-06 · The admin is the only account
+### ~~2026-10-06 · The admin is the only account~~
 
-One login in the whole system. Everyone else is anonymous or holds a link.
+~~One login in the whole system. Everyone else is anonymous or holds a link.~~
 
-| Party | How they get in |
+| ~~Party~~ | ~~How they get in~~ |
 |---|---|
-| Admin | Signs in |
-| Household | One-time intake link |
-| Donor | Nothing to browse; gives a name and email when claiming |
-| Provider | Never |
+| ~~Admin~~ | ~~Signs in~~ |
+| ~~Household~~ | ~~One-time intake link~~ |
+| ~~Donor~~ | ~~Nothing to browse; gives a name and email when claiming~~ |
+| ~~Provider~~ | ~~Never~~ |
 
-**Reverses:** donor magic-link sign-in, and caseworker logins.
+~~**Reverses:** donor magic-link sign-in, and caseworker logins.~~
 
-**Consequence that isn't solved yet:** donors tick off items after claiming,
+~~**Consequence that isn't solved yet:** donors tick off items after claiming,
 but a donor with no account has no way back to their claim. See *Unresolved*
-below.
+below.~~
+
+> **Reversed 2026-10-09** — providers sign in too. See *Providers get
+> accounts, by the admin's invite only* below. Still true: households and
+> donors never sign in, and the donor's way back to a claim is still open.
 
 ---
 
@@ -325,27 +336,27 @@ reason not to do the demo. All are things the demo does not prove.
 2. **The security model is absent.** The platform rule is row-level security
    on every table, default deny. SQLite has no such thing. In the demo, the
    server code is the only thing deciding who sees what. The public listing
-   must select an explicit list of safe columns, never `SELECT *`.
+   must name the safe columns one by one, never "every column."
 3. **Login is a stand-in.** The rule is "never roll our own auth." The demo's
-   admin login is a labelled placeholder and gets thrown away. Nothing about
-   auth is de-risked by this build.
-4. **No email is sent.** "Admin sends the link" means the admin copies a URL
-   off the screen. The household's confirmation is a page, not an email.
+   sign-ins are labelled placeholders and get thrown away. Nothing about auth
+   is de-risked by this build.
+4. **No email is sent.** Every "emails a link" step means someone copies a
+   URL off the screen. The household's confirmation is a page, not an email.
 5. **The one-time link points at `localhost`.** It only opens on Alex's
    machine. To put it on a phone, the server has to listen on the local
    network, which exposes it to everyone on that Wi-Fi. Fine at home, not in
    a café.
 6. **The double-claim check has to be real anyway.** The prototype checked in
-   the browser, which protects nothing. The server does it in one statement —
-   `UPDATE … SET status = 'claimed' WHERE id = ? AND status = 'available'` —
-   and treats "zero rows changed" as "someone got there first." This is the
-   one piece of the demo that must be production-correct, and it ports to
-   Postgres unchanged.
-7. **SQLite is looser than Postgres.** Foreign keys are off until switched on
-   per connection (`PRAGMA foreign_keys = ON`). Columns accept the wrong type
-   unless the table is declared `STRICT`. There are no boolean, timestamp, or
-   enum types — use `0/1`, ISO-8601 text, and `CHECK` constraints. Write the
-   schema as plain portable SQL in a migration file from the first table.
+   the browser, which protects nothing. The server does it as one conditional
+   update: mark the household claimed only if it is still available, then
+   look at whether a row actually changed. No row changed means someone got
+   there first. This is the one piece of the demo that must be
+   production-correct, and it ports to Postgres unchanged.
+7. **SQLite is looser than Postgres.** Foreign-key enforcement is off until
+   switched on for each connection. Columns accept the wrong type unless the
+   table is declared strict. There are no boolean, timestamp, or enum types.
+   The schema belongs in a migration file from the first table, written so it
+   ports. That file lives in the platform repo, not here.
 8. **The database file never gets committed.** The repo is public. `*.db` goes
    in `.gitignore`. Seed data is synthetic and comes from a script.
 9. **It needs a reset.** A demo that has been clicked through once is used up:
@@ -369,69 +380,248 @@ it changes how much care the front end deserves.
 
 ---
 
+### 2026-10-09 · Providers get accounts, by the admin's invite only
+
+**Reverses:** *The admin is the only account* (2026-10-06), three days old.
+
+Two kinds of account now: the admin, and providers.
+
+- The admin invites a provider by name and email. The invite works once and
+  dies 24 hours after it was sent. An expired one is resent by the admin.
+- The provider uses it to pick a username and password.
+- A provider's page has two controls: **create a form link**, and **sign
+  out**. Nothing else. A provider never sees a household, a referral, a
+  status, or another provider.
+- The admin sees every provider account and can delete one. Deleting stops
+  that provider signing in. It does not cancel links they already sent.
+
+**What it buys:** under the 2026-10-06 flow a provider had to tell the admin,
+outside the app, which family needed a link. Now the provider tells nobody.
+The admin learns a household exists when the household submits its own form.
+
+**What it costs:** more than one person now holds a password. That lands on
+the platform rule *never roll our own auth*, with a second kind of user to
+cover, and a password reset nobody has drawn yet. **Anything built here is an
+auth change: stop and flag before starting it.**
+
+| Party | How they get in |
+|---|---|
+| Admin | Signs in |
+| Provider | Signs in. Account exists only by the admin's invite |
+| Household | A one-time form link from their provider |
+| Donor | Public pages. Gives name, phone and email when claiming |
+| Co-sponsor | An invite link from the donor |
+
+---
+
+### 2026-10-09 · Providers create the family links, and a link lasts 48 hours
+
+**Revises:** steps 1–2 of *The household fills in its own form* (2026-10-06).
+The household still submits its own form. Who makes the link changed.
+
+1. The provider creates a link. The site asks nothing about the family.
+2. The provider emails it to the family **from their own email account**. The
+   site never sees that message, and never learns who the link went to or
+   when it was sent.
+3. The link is for one family, works once, and dies 48 hours after it was
+   created, used or not.
+4. The household submits. The form reaches the admin as a referral.
+
+**The referral carries the provider's name, as plain text.** It is copied
+onto the referral when the family submits and is not a pointer to the
+account. Delete the account and the name stays on every referral it produced.
+
+**Accepted cost:** the provider's page keeps no history. Which link went to
+which family is the provider's own bookkeeping. That is the point: the site
+has nothing to leak about who a provider's clients are.
+
+**Resolves:** how long an unused link lasts.
+
+---
+
+### 2026-10-09 · The family's email is the one piece of family contact data the site holds
+
+**This reopens *No family PII* (2026-09-20) and narrows it. Said plainly,
+because that decision is on the locked list.**
+
+The rule as written named three things: names, addresses, phone numbers. All
+three stay out. The email comes in, on these terms:
+
+- The family types it into their own form. Nobody else can enter it.
+- It is never public and never shown to a donor.
+- It is used to send the family a copy of what they submitted.
+- The site sees it nowhere else. The link itself travels through the
+  provider's own email, not ours.
+- It goes in the retention purge with every other contact detail, 60 days
+  after the drive closes.
+
+**What changes in the risk picture:** the original reason still holds — a
+breach cannot show where a family lives. But a breach can now show a family's
+email address, and an address like `first.last@…` is a name. The site holds
+less than it would have under any earlier plan, and more than zero.
+
+**What this commits us to:** the site now sends email to families, so email
+delivery is part of the live release. Seed data uses `example.com` addresses
+only, same as every other rule that follows from the public repo.
+
+**Resolves:** the household-email conflict left open earlier today.
+
+---
+
+### 2026-10-09 · No photos, confirmed
+
+No photo field on any page, optional or otherwise.
+
+*No photos, v1 or later* (2026-09-20) stands. The 2026-10-06 notes that
+mentioned an optional photo are not being followed.
+
+**Resolves:** the photo conflict left open earlier today.
+
+---
+
+### 2026-10-09 · A co-sponsor joins by invite link, and the first sponsor stays the contact
+
+Fills in *Co-sponsoring stays in the flow* (2026-10-06).
+
+- At claim the donor picks **solo** or **with a friend**. The second choice
+  gives them a link to pass on.
+- The friend opens it, gives the same three details the donor gave, and joins
+  the household. The link works for one co-sponsor.
+- The donor who claimed stays the single point of contact for the drop-off.
+- The admin can switch splitting off for the whole drive.
+
+**Resolves:** the tension recorded on 2026-10-06. The admin's objection was
+two people muddying who the drop-off contact is. There is still exactly one.
+
+---
+
+### 2026-10-09 · Thank-yous are relayed by the admin
+
+The family thanks the admin, outside the app. The admin types the note in.
+The sponsor sees it beside the household they sponsored.
+
+**Reverses:** `thank-you note relay` in the original defer list.
+**Settles:** the 2026-10-02 flow diagram dropped it, the 2026-10-04 meeting
+kept it. It is in the flow.
+
+It happens after gifts are delivered, so it is the last thing that has to
+exist.
+
+---
+
+### 2026-10-09 · What each party types in
+
+| Who | What | Seen by |
+|---|---|---|
+| Admin, inviting a provider | Provider's name and email | Admin |
+| Provider, creating an account | Name, email, username, password | Admin sees the name and status |
+| Provider, creating a link | Nothing | — |
+| Household | A one-line household summary, number of adults, number of children | Donors, once published |
+| Household | The story, with its own consent tick | Donors only if ticked **and** the admin leaves it on |
+| Household, per person | Age, pronouns, clothing size, shoe size, needs, would love | Donors, once published |
+| Household | Email | Admin only. Never public |
+| Household | Two consents: an adult in the household agrees to share the wish list; the form cannot be edited after submitting | Admin |
+| Donor | Name, phone, email | Admin. The co-sponsor sees the name |
+| Co-sponsor | Name, phone, email | Admin. The donor sees the name |
+
+The admin's choices on a referral are **publish, edit, or reject**. There is
+no "send back for changes."
+
+The roster export holds a household's id, description, status, sponsor, and
+last update. **No contact details in the export.**
+
+---
+
 ## Scope, as of 2026-10-09
+
+Rewritten later the same day to follow the journey flow. The version written
+that afternoon had the admin sending links and a single login.
 
 ### v1 demo (local)
 
 One pass through the whole chain, on one machine:
 
-1. Admin signs in (stand-in).
-2. Admin generates a one-time intake link.
-3. Household opens the link, fills in the form, ticks or doesn't tick story
+1. Admin signs in (stand-in) and invites a provider. The invite is a link on
+   the screen.
+2. Provider opens the invite and creates an account (stand-in).
+3. Provider creates a form link and copies it.
+4. Household opens the link, fills in the form, ticks or doesn't tick story
    consent, submits. The link stops working.
-4. Admin reviews, then approves or rejects.
-5. An approved household appears on the public list as a code, a story (if
-   consented), member ages and pronouns, and a wish list.
-6. Donor claims it, with a name and email, optionally naming a co-sponsor.
-   The household leaves the public list.
-7. A second donor trying the same household is told it's gone.
-8. Admin sees the claim.
+5. Admin sees the referral with the provider's name on it, and publishes or
+   rejects.
+6. A published household appears on the public list: a number, a summary,
+   the story if consented, each person's age and sizes, a wish list.
+7. Donor claims it, solo or with a friend. The household leaves the public
+   list.
+8. A second donor trying the same household is told it's gone.
+9. Admin sees the claim.
 
-**Not in the demo:** email, CSV export, audit log, exception queue, item
-tick-off and admin receipt confirmation, admin-side release, thank-you notes,
-photos, payments, deploy.
+The 24-hour and 48-hour limits are in the demo. They are one stored timestamp
+and one comparison each, and they are what makes a link a link.
 
-*Assumptions made here, not decisions:* that the donor gives name and email at
-claim, and that the smallest honest version of co-sponsoring is a second
-contact on the claim form. Correct either one if wrong.
+**Not in the demo:** every email (invite, confirmation, reminder), password
+reset, deleting a provider, the co-sponsor's join page, item tick-off and
+receipt confirmation, re-listing, the per-sponsor cap, thank-yous, drive
+settings, roster export, activity log, exception queue, deploy.
 
-### Live release (Nov 6 onward)
+*Assumptions, not decisions:* that both sign-ins are stand-ins, and that the
+demo shows the co-sponsor link without the page behind it. Correct either one
+if wrong. The provider step added two screens to the demo since this
+afternoon; if the demo needs to shrink, that is the piece to seed instead of
+build.
 
-Everything in the demo, plus what the demo skips: real admin auth, hosting,
-row-level security or its equivalent, email delivery, roster CSV export (the
-fallback if the app fails in December), audit log, item tick-off with admin
-confirmation, admin release.
+### Live release
 
-**Still deferred:** thank-you notes, SMS, in-app messaging.
-**Still cut:** photos, payments.
+The whole flow, in the order the calendar needs it:
+
+| Needed by | What |
+|---|---|
+| Nominations opening | Admin sign-in, provider invites and accounts, form links, household form and confirmation, approval queue |
+| Nov 6 → Nov 30 | Public list, listing, claim, the lost-race screen, co-sponsor join, donor confirmation |
+| Nov 30 → Dec 14 | Item tick-off, "dropped off", admin confirms receipt, reminders, re-listing |
+| After Dec 14 | Thank-yous, close-out, retention purge |
+| Throughout | Roster export. It is the fallback if the app fails, so it cannot be last |
+
+Plus what the demo skips entirely: real auth for two kinds of account,
+hosting, row-level security or its equivalent, email delivery.
+
+**Still deferred:** SMS, in-app messaging.
+**Still cut:** photos, payments, walk-in intake, self-service release.
 
 ---
 
 ## Unresolved as of 2026-10-09
 
-These are places where the meeting notes contradict a standing decision, or
-where two decisions leave a hole. None has been decided. Each one is called
-out here so that nobody quietly builds one side of it.
+Rewritten later the same day.
 
-- **Household email vs. no family PII.** The 2026-10-06 notes want the link
-  sent to the family's personal email and a confirmation emailed back. An
-  email address is family contact information. *No family PII* still stands
-  until someone reopens it on purpose. Ways through: the admin sends from
-  their own mailbox and the app never stores the address, or the rule gets an
-  explicit, written exception. The demo sends nothing, so it sidesteps this
-  without answering it.
-- **Photos.** The 2026-10-06 notes mention an optional photo. *No photos, v1
-  or later* still stands and is not reopened by this update.
+### Closed since this afternoon
+
+- Household email vs. no family PII → *The family's email is the one piece…*
+- Photos → *No photos, confirmed*
+- How long an unused link lasts → 48 hours; provider invites, 24
+- Thank-you notes → *Thank-yous are relayed by the admin*
+- Co-sponsor vs. one drop-off contact → *A co-sponsor joins by invite link…*
+
+### Still open
+
+- **Provider passwords vs. "never roll our own auth."** Two kinds of account
+  need real sign-in, and password reset has no screen. Nobody has chosen how.
 - **How a donor gets back to their claim.** No donor accounts, but donors
-  tick off items later. Likely answer: a private link per claim, the same
-  mechanism as the intake link. Not decided.
-- **What contact the donor sees after claiming.** Provider, admin, or nothing
-  beyond the drop-off instructions. Open since 2026-10-04.
-- **How long an unused intake link lasts.** "Dead after use" is decided.
-  "Dead after N days unused" is not.
-- **Where "length of time as a client" is recorded**, and whether it comes
-  from the household or the provider.
-- **Thank-you notes.** Removed from the 2026-10-02 flow diagram, kept in the
-  2026-10-04 meeting. Out of the demo either way.
-- **Demo: foundation or throwaway?** See the 2026-10-09 entry.
-- **Demo: which local server runtime?** See the 2026-10-09 entry.
+  tick items off later. The flow proposes a link in the confirmation email.
+  Not decided.
+- **What contact the donor sees after claiming.** Open since 2026-10-04.
+  Three mockups still carry the prototype's wording — "contact details unlock
+  when you confirm," a named family contact on the confirmation page, and a
+  locked setting called "hide contact details until a household is claimed."
+  *No family PII* says there are no such details to unlock. Either that
+  wording goes, or the contact shown is the provider's or the admin's.
+- **"How long they have been a client."** Wanted on 2026-10-04. It is not on
+  the household form, and a provider entering it is the provider entering
+  client information.
+- **Does the family hear when a sponsor claims them?** Not discussed.
+- **When nominations open.** The settings mockup shows Oct 20 as sample data.
+  If that is the real date, the first row of the live-release table is due
+  then, not Nov 6.
+- **Dave's sign-off:** a gate on going live only, or on building too?
+- **Demo: foundation or throwaway?** See the demo entry.
+- **Demo: which local server runtime?** See the demo entry.
