@@ -91,8 +91,9 @@ design, worse demo. She should know the app won't tell anyone where to drive.
 1. **GitHub org, or stay on personal repos?** (see §6 — this breaks things)
 2. **Gifts or cash?** Claiming a wish list and sending money are different
    products with different screens. This is the first Story and it's unanswered.
-3. **Will mom actually open GitHub?** If no, the two-repo split loses its
-   main justification and one repo is simpler.
+3. **Will mom actually open GitHub?** → **Resolved: no.** The two-repo split
+   stands anyway — it rests on the no-application-code rule, not on whether
+   she reads it. See [open-questions.md](open-questions.md).
 4. Organization name, coordinator contact, drop-off address, caseworker list.
 5. **How many households does this drive typically serve?** Thirty and three
    hundred are different architectures.

@@ -66,8 +66,9 @@ nice-to-have.**
 `secret-santa-product` for product discipline, `secret-santa-platform` for
 code. The GitHub Project spans both; milestones cannot.
 
-Revisit if [open question 3](open-questions.md) resolves to "mom will not open
-GitHub" — the split loses its main justification and one repo is simpler.
+[Open question 3](open-questions.md) resolved to "mom will not open GitHub"
+and the split stands anyway: its justification is the no-application-code
+rule, not whether she reads it. Revisit only if that rule stops holding.
 
 ---
 
