@@ -369,7 +369,33 @@ it changes how much care the front end deserves.
 
 ---
 
+### 2026-10-09 · The first running version is published by Oct 15
+
+Alex's call. The first running version has to be published by
+**Oct 15, 2026** — six days from this entry.
+
+Nov 6, Nov 30, Dec 14 and Feb 12 do not move. Oct 15 is a new date in front
+of them.
+
+**What this does to the entry above is not decided.** "Published" has two
+readings, and they are different amounts of work:
+
+| | Reachable at a URL | Running, and shown to the admin |
+|---|---|---|
+| *Demo runs on Alex's machine* | Reversed in part — hosting and deploy move from "after the demo" to Oct 15 | Stands. Oct 15 is the demo's due date |
+| Admin login | The stand-in can't sit on the public internet. Real auth is due Oct 15 | Stand-in is fine |
+| *Nothing goes live without Dave's sign-off* | Needed before Oct 15 | Not triggered |
+| Email, RLS or its equivalent | Pulled forward with the hosting | Still after the demo |
+
+Until Alex says which, nothing gets built that only one reading needs.
+
+---
+
 ## Scope, as of 2026-10-09
+
+**Due date:** the first running version is published by **Oct 15, 2026**.
+Whether that is the local demo below or a hosted build is open — see
+*Unresolved*.
 
 ### v1 demo (local)
 
@@ -433,5 +459,7 @@ out here so that nobody quietly builds one side of it.
   from the household or the provider.
 - **Thank-you notes.** Removed from the 2026-10-02 flow diagram, kept in the
   2026-10-04 meeting. Out of the demo either way.
+- **What "published by Oct 15" means.** A URL anyone can open, or a running
+  build shown to the admin. See the 2026-10-09 entry on the Oct 15 date.
 - **Demo: foundation or throwaway?** See the 2026-10-09 entry.
 - **Demo: which local server runtime?** See the 2026-10-09 entry.

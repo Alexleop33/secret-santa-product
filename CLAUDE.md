@@ -42,6 +42,7 @@ backlog, and the process gets redesigned after the first pass anyway.
 
 | Date | Event |
 |---|---|
+| **Oct 15, 2026** | First running version published |
 | **Nov 6, 2026** | Nominations close — caseworker + coordinator flows must be live |
 | **Nov 30, 2026** | Donor claims close |
 | **Dec 14, 2026** | Gifts due |

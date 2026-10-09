@@ -43,6 +43,7 @@ body:
     attributes:
       label: Which deadline does this serve?
       options:
+        - Oct 15 — first running version published
         - Nov 6 — nominations close
         - Nov 30 — claims close
         - Dec 14 — gifts due
