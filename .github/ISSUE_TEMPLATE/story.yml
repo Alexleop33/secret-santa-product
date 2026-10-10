@@ -8,7 +8,7 @@ body:
     attributes:
       label: Outcome
       description: One sentence. Who, and what they can now do.
-      placeholder: A caseworker can submit a household referral without emailing anyone.
+      placeholder: A provider can submit a household referral without emailing anyone.
     validations: { required: true }
   - type: textarea
     id: why
