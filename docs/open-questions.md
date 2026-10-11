@@ -5,15 +5,8 @@ These gate real work. Each one should become a Story, a decision in
 
 ## Still open
 
-- [ ] **2. Gifts or cash?**
-      Claiming a wish list and sending money are different products with
-      different screens. **This is the first Story and it is unanswered.**
-
 - [ ] **5. How many households does this drive typically serve?**
       Thirty and three hundred are different architectures.
-
-- [ ] **6. Nonprofit Stripe account + tax receipts.**
-      Needs whoever handles the org's books. Not an engineering decision.
 
 - [ ] **8. The `gh` login isn't allowed to touch Projects yet.**
       When you logged into the `gh` CLI, GitHub handed it a token — a key with
@@ -38,23 +31,20 @@ These gate real work. Each one should become a Story, a decision in
 
 - [ ] **9. How does the referral form stop PII being typed in?**
       Falls out of the public-repo decision. Policy isn't enough — a
-      caseworker in a hurry will put "Maria, 412 Oak St" in a notes field
+      provider in a hurry will put "Maria, 412 Oak St" in a notes field
       unless the form makes that awkward. Field design, placeholders,
-      validation. **Needs a Story.**
+      validation. **Nothing is decided and nothing is built** — this is form
+      design, and there is no form yet. Needs a Story when the referral form
+      is the slice being built, not before.
 
-- [ ] **10. Where does login come from, now that Supabase is out?**
-      SQLite has no auth, and *never roll our own* is a locked rule. Phase
-      one is a handful of known people and can run on a dev-only "sign in
-      as" switcher that cannot be enabled in a production build. Donors,
-      after Nov 6, need the real thing — a hosted magic-link provider.
-      **Blocks the donor side. Does not block phase one.**
-
-- [ ] **11. Is SQLite the production database too, or only for development?**
-      At this scale it is genuinely fine to run on. The risk isn't load, it's
-      that a file on one droplet dies with the droplet — so if yes, continuous
-      backup to object storage becomes its own Story. If no, the swap to
-      Postgres happens *before* real referrals land, not after.
-      **Decide before Nov 6.**
+- [ ] **10. What covers the family's one-time form link?**
+      Narrowed twice on 2026-10-11 and now down to one piece. Google sign-in
+      covers staff and donors; Supabase is the host and already carries magic
+      links whenever they are wanted.
+      **Families never sign in at all** — they open a one-time link, once, and
+      that is their whole relationship with the app. Supabase magic links are
+      the obvious candidate, but nothing has been decided and nothing built.
+      **Blocks real referrals before Nov 6.**
 
 - [ ] **12. Where does mom review and sign off, now that it isn't GitHub?**
       Falls straight out of question 3. She is the first real admin user and
@@ -65,6 +55,25 @@ These gate real work. Each one should become a Story, a decision in
       **Decide before the first Story reaches UAT.**
 
 ## Resolved
+
+- [x] **2. Gifts or cash?** → **Gifts. The app never handles money.**
+      No Stripe link, no card data, no cash. Donors buy and drop off.
+      See [decisions.md](decisions.md), 2026-10-11.
+
+- [x] **6. Nonprofit Stripe account + tax receipts.** → **Closed, not
+      deferred.** Falls away entirely with the no-payments decision. If the
+      org ever wants to take money, that happens outside this system.
+
+- [x] **11. Is SQLite the production database too, or only for development?**
+      **Superseded 2026-10-11** — SQLite is out altogether, replaced by
+      Postgres from the first table, so the question no longer has a subject.
+      The original answer is kept below for its reasoning.
+      → **Development only.** It is what the app runs on while it is built.
+      Production is a separate decision, expected to be Supabase but
+      deliberately not worked on until there is something running worth
+      showing. The move happens *before* any real family data lands — at the
+      latest before Nov 6 — and portable SQL only is what keeps it cheap.
+      See [decisions.md](decisions.md).
 
 - [x] **1. GitHub org, or personal repos?** → **Personal.** Labels stand in
       for Issue Types; Story → Epic links are manual via the Parent Story
@@ -80,16 +89,16 @@ These gate real work. Each one should become a Story, a decision in
       question in 35a9c27 and stands on the no-application-code rule, which
       holds whether or not she ever opens GitHub.
 
-- [x] **4. Organization name, coordinator contact, drop-off address,
-      caseworker list.** → **Placeholders, and they stay placeholders.** We
-      get a stand-in org name to build against; the real org name, coordinator
+- [x] **4. Organization name, admin contact, drop-off address,
+      provider list.** → **Placeholders, and they stay placeholders.** We
+      get a stand-in org name to build against; the real org name, admin
       contact, drop-off address, and household mapping live with mom and never
       enter this system or either repo. This isn't a shortcut — it's the same
       rule as *no family PII*, extended to the org's own details, and it means
       seed data is unblocked today.
 
-      **One carve-out, dated:** caseworker *logins* need real email addresses
-      before the coordinator flow goes live on **Nov 6**. Placeholders cover
+      **One carve-out, dated:** provider *logins* need real email addresses
+      before the admin flow goes live on **Nov 6**. Placeholders cover
       development; they don't cover launch. Ask mom for that list in late
       October — see [question 10](#still-open) for the login mechanism.
 

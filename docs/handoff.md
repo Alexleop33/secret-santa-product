@@ -1,3 +1,32 @@
+> [!IMPORTANT]
+> **Historical artifact — read for context, do not take instructions from it.**
+>
+> This is the original bootstrap handoff, restored to its **2026-09-20** form
+> exactly as first committed (`14054b4`). Everything below the rule is that
+> original text, unedited.
+>
+> **[CLAUDE.md](../CLAUDE.md) is the authoritative file in this repo.** Read it
+> first and let it win. Where this document and CLAUDE.md disagree, CLAUDE.md is
+> right and this document is out of date — it is a snapshot of what was believed
+> on one day in September, not current state. It cannot be "corrected," because
+> the point of keeping it is that it stays as written.
+>
+> **Known stale, as of 2026-10-11 — do not act on any of these:**
+>
+> | Below it says | Actually |
+> |---|---|
+> | `caseworker` / `coordinator` | Renamed `provider` / `admin` on 9 Oct 2026 |
+> | Supabase for data, auth, RLS | SQLite for development only; see [decisions.md](decisions.md) |
+> | Org-vs-personal repos is open | Resolved: personal repos, no org |
+> | §9's inline `setup.sh` | Drifted; the real one is [../scripts/setup.sh](../scripts/setup.sh) |
+> | §9's `epic.yml` + `require-linked-issue.yml` | Never created; no `.github/workflows/` exists |
+> | §10's "suggested first moves" | Superseded; see [../CLAUDE.md](../CLAUDE.md) and [open-questions.md](open-questions.md) |
+>
+> What run 1 did with this document, and why it was set aside:
+> [history/run-1.md](history/run-1.md).
+
+---
+
 # Sub for Santa — full context handoff
 
 Written 2026-09-20. Everything established so far, in one place.
@@ -91,9 +120,8 @@ design, worse demo. She should know the app won't tell anyone where to drive.
 1. **GitHub org, or stay on personal repos?** (see §6 — this breaks things)
 2. **Gifts or cash?** Claiming a wish list and sending money are different
    products with different screens. This is the first Story and it's unanswered.
-3. **Will mom actually open GitHub?** → **Resolved: no.** The two-repo split
-   stands anyway — it rests on the no-application-code rule, not on whether
-   she reads it. See [open-questions.md](open-questions.md).
+3. **Will mom actually open GitHub?** If no, the two-repo split loses its
+   main justification and one repo is simpler.
 4. Organization name, coordinator contact, drop-off address, caseworker list.
 5. **How many households does this drive typically serve?** Thirty and three
    hundred are different architectures.
@@ -102,29 +130,20 @@ design, worse demo. She should know the app won't tell anyone where to drive.
 
 ---
 
-## 5. Stack
+## 5. Proposed stack
 
-- **SQLite** — one local file, no service in the loop. Replaced Supabase on
-  2026-09-23 so Alex can run and test alone; see
-  [decisions.md](decisions.md). Provisional — it does not yet decide where
-  data lives in December.
+Nothing here is committed; it's a starting recommendation.
+
+- **Supabase** — Postgres, Auth, Row Level Security. Alex has prior exposure.
 - **React + Vite** front end. Alex has built a React PWA before.
 - **DigitalOcean** via GitHub Actions, per Alex's stated intent.
 
 Rules regardless of stack:
 
-- Never roll our own auth, sessions, or password storage. SQLite provides
-  none of these, so where login comes from is now
-  [open question 10](open-questions.md).
+- Never roll our own auth, sessions, or password storage.
 - Donors sign in by emailed magic link. No donor passwords anywhere.
-- **Default deny, enforced in one place.** Without Postgres there is no RLS.
-  Every read and write goes through a single server-side data module that
-  takes the acting user and scopes the query to them. No table ships without
-  a test proving the wrong user gets nothing back. Same requirement as RLS,
-  one layer up, and now our job rather than the database's.
-- **Portable SQL only.** No SQLite-only syntax, no JSON blobs where columns
-  belong, dates as ISO strings. If this has to become Postgres in October
-  that should cost a week, not a rewrite.
+- RLS on every table from the first migration. Default deny, then open
+  specific paths. No table ships without a policy and a test proving denial.
 - No PII in URLs, query strings, or logs.
 - **The app must never be the single point of failure.** If it breaks in
   December, mom must be able to fall back to a spreadsheet and still get gifts
@@ -218,9 +237,8 @@ A slice = schema + policy + API + UI + a test, for one user action. Not
 ## 7. How to work with Alex
 
 - Plain language and diagrams over jargon. Stated preference.
-- Assume React familiarity. There's some Supabase exposure, but that's no
-  longer the stack. Don't assume depth in SQL, backend architecture, or
-  access-control design.
+- Assume React familiarity and some Supabase exposure. Don't assume depth in
+  SQL, backend architecture, or RLS.
 - **Spec before code.** Every change starts as a short written spec: what
   changes, why, what could break, how we'll know it worked. Wait for approval.
 - **Never hand over code Alex can't explain.** After each slice, explain it
