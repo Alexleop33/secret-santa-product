@@ -537,3 +537,44 @@ user gets nothing.
 problem. The escape hatch is cheap for the data — it is ordinary Postgres, so
 `pg_dump` moves it. The part that would *not* come with it is auth, which
 would have to be solved again.
+
+---
+
+### 2026-10-12 · A bundler is case by case, not banned
+
+Narrows yesterday's *Plain HTML, CSS and JavaScript* entry rather than
+reversing it. **No framework and no TypeScript still stand.** What changes is
+only the build step.
+
+**The principle, stated properly:** the browser runs the file you wrote. With
+no build step, the file open in the editor is byte-for-byte the file the
+browser executes — view source and it is your own code, and a console error
+points at your line in your file. A bundler is the one category of tool that
+breaks that, by running generated output with source maps pasted over the top.
+
+**Why this is no longer a ban.** A flat prohibition would eventually be worked
+around quietly, because the honest cases do exist: more than a handful of
+browser packages makes pinned CDN imports unwieldy, and that is a real
+problem rather than a fashion. A rule with a bar gets followed; a rule with a
+wall gets climbed.
+
+**The bar. A bundler needs its reason written in the Epic, answering:**
+
+1. What breaks, or becomes unworkable, without it?
+2. Why doesn't a pinned CDN import solve it?
+3. Why doesn't a Node-side script, which never ships to the browser, solve it?
+
+"It's standard" is not an answer to any of those.
+
+**Two guardrails if one is ever adopted:**
+
+- **Source maps must work before anything else is built on it.** The cost of a
+  build step is paid entirely in debugging, and that is the thing that keeps
+  it affordable.
+- **It does not reopen the framework decision.** A bundler is a build tool;
+  React is a way of writing code. Adopting the first is not permission for
+  the second, and they get argued separately.
+
+**What this changes today: nothing.** There is no bundler, nothing needs one,
+and the Google sign-in slice reaches Supabase through a pinned CDN import
+precisely because that avoids the question.
