@@ -11,12 +11,15 @@
 > on one day in September, not current state. It cannot be "corrected," because
 > the point of keeping it is that it stays as written.
 >
-> **Known stale, as of 2026-10-11 — do not act on any of these:**
+> **Known stale, as of 2026-10-12 — do not act on any of these:**
 >
 > | Below it says | Actually |
 > |---|---|
 > | `caseworker` / `coordinator` | Renamed `provider` / `admin` on 9 Oct 2026 |
-> | Supabase for data, auth, RLS | SQLite for development only; see [decisions.md](decisions.md) |
+> | §5's Supabase for data, Auth, RLS | Reopened twice since: swapped for SQLite on 23 Sept, then swapped back for good on 11 Oct — Postgres with row-level security, hosted on Supabase, Google as the sign-in provider; see [decisions.md](decisions.md) |
+> | §5's React + Vite front end | Replaced 11 Oct 2026 by plain HTML, CSS and JavaScript — no framework, no build step; see [decisions.md](decisions.md) |
+> | §4's "payments, if any, go through a Stripe link" | Replaced 11 Oct 2026 by no payments, ever — the app never handles money; see [decisions.md](decisions.md) |
+> | §5's "donors sign in by emailed magic link" | Narrowed 11 Oct 2026: Google sign-in is the login, magic links are postponed, not rejected; see [decisions.md](decisions.md) |
 > | Org-vs-personal repos is open | Resolved: personal repos, no org |
 > | §9's inline `setup.sh` | Drifted; the real one is [../scripts/setup.sh](../scripts/setup.sh) |
 > | §9's `epic.yml` + `require-linked-issue.yml` | Never created; no `.github/workflows/` exists |
