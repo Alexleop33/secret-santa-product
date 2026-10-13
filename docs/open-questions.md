@@ -46,6 +46,18 @@ These gate real work. Each one should become a Story, a decision in
       the obvious candidate, but nothing has been decided and nothing built.
       **Blocks real referrals before Nov 6.**
 
+- [ ] **13. The Supabase MCP still has write access.**
+      Added 2026-10-13 with `docs`, `database`, `debugging` and `development`
+      enabled — `account`, `branching` and `functions` deliberately left off.
+      `database` can run arbitrary SQL, which is harmless while the only rows
+      are three fake households and is a different proposition once real
+      referrals exist.
+      **Action, not a question: the connection is removed before the app is
+      reachable by anyone outside Alex and his mum. At the latest Nov 6.**
+      Removal is the plan, not a downgrade — read-only is only the fallback if
+      something still genuinely needs it, and Supabase's read-only parameter
+      for the hosted URL would need checking in their docs at that point.
+
 - [ ] **12. Where does mom review and sign off, now that it isn't GitHub?**
       Falls straight out of question 3. She is the first real admin user and
       the UAT gate — something has to show her "here's what was built, does

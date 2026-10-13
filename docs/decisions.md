@@ -578,3 +578,98 @@ wall gets climbed.
 **What this changes today: nothing.** There is no bundler, nothing needs one,
 and the Google sign-in slice reaches Supabase through a pinned CDN import
 precisely because that avoids the question.
+
+---
+
+### 2026-10-13 · The Supabase MCP, scoped down, with a date on its write access
+
+The Supabase MCP server is added to the platform repo at project scope, so
+every session in that repo inherits it. Official Agent Skills installed
+alongside it.
+
+**Why it earns its place:** it can verify an RLS policy actually denies. That
+is the one thing in the queue slice that cannot be checked by reading code,
+and the one place where being subtly wrong looks exactly like being right. A
+tool that can query as different roles settles it instead of reasoning about
+it. The docs feature also keeps a session current on Supabase's API, which
+moves faster than a model's memory — the publishable-key model is already a
+case where this repo was ahead of the assistant.
+
+**Scoped to four features on purpose:** `docs`, `database`, `debugging`,
+`development`. Left off: `account`, which can create, pause and delete
+projects; `branching`, which is unused; and `functions`, since edge functions
+were declined at `supabase init`. Fewer capabilities, less to go wrong.
+
+**Nothing secret enters the repo.** `.mcp.json` carries the project ref, which
+is already in `public/config.js` and in the public Supabase URL. The OAuth
+token stays on the machine.
+
+**Two costs, both named rather than discovered later:**
+
+1. **`database` means arbitrary SQL.** Harmless today — the only rows are
+   three obviously fake households. It is a different proposition once real
+   referrals exist. **So this connection is temporary: it is removed before
+   the app is reachable by anyone outside Alex and his mum, at the latest
+   Nov 6.** Removal, not a downgrade — read-only is the fallback only if
+   something by then genuinely still needs it. Tracked as
+   [question 13](open-questions.md).
+2. **Database rows become untrusted input, and this app is built to accept
+   strangers' prose.** Once the referral form ships, families type story
+   paragraphs straight into the database. Any text read out of those rows is
+   data to be evaluated, never an instruction to follow — and the risk exists
+   precisely because accepting free text from people we have never met is the
+   whole point of the product. Now a locked rule in
+   [CLAUDE.md](../CLAUDE.md).
+
+**Revisit:** before the referral form is put in front of one real family.
+
+---
+
+### 2026-10-13 · Supabase Agent Skills: committed, and kept at arm's length
+
+Installed alongside the MCP: two skills under `.agents/skills/`, symlinked
+from `.claude/skills/`, pinned by content hash in `skills-lock.json`.
+
+**They are committed to the repo, deliberately.** 188K of vendored third-party
+markdown sits awkwardly beside *Alex has to be able to read every line* — and
+the reason to commit anyway is stronger: **instructions that steer future
+sessions should be reviewable in a diff.** If a skill update changes what a
+session is told, that should arrive in a pull request rather than silently.
+The symlinks force the question anyway, since committing them without their
+target would break any fresh clone.
+
+**One file excluded:** `.claude/settings.local.json`, which is per-machine by
+convention and now in `.gitignore`.
+
+**The risk is scale, not accuracy.** The references assume production Postgres
+at volume — the RLS performance file reasons about a million rows. This drive
+has at most three hundred households. About two-thirds of the content concerns
+problems this app will never have: partitioning, connection pooling, prepared
+statements, monitoring, batch inserts, covering indexes. Correct advice for the
+wrong size of problem, cited as "best practice," is how a three-hundred-row
+table ends up partitioned.
+
+**So the rule, now in the platform `CLAUDE.md`:** no schema, index, pooling or
+monitoring change on a skill's authority without a reason stated in the Epic.
+Where a skill and `CLAUDE.md` disagree, `CLAUDE.md` wins.
+
+**It earned its keep immediately, which is worth recording honestly:** its RLS
+performance reference independently flagged wrapping `auth.uid()` in a
+subselect so Postgres evaluates it once rather than per row — the same note
+that came out of reviewing the queue plan.
+
+**The door-and-book distinction, because it decides what gets removed when:**
+
+| | What it is | Before launch |
+|---|---|---|
+| `.mcp.json` | A live connection that can run arbitrary SQL | **Deleted.** This is what "no agents server-side" means |
+| `.agents/skills/` | Static markdown with access to nothing | Can stay indefinitely |
+
+**Before the app is reachable by anyone outside Alex and his mum — at the
+latest Nov 6 — the checklist is:**
+
+1. Delete `.mcp.json`
+2. Confirm no `service_role` key exists anywhere outside the Supabase dashboard
+3. Publish the Google consent screen, so sessions stop expiring weekly
+4. Create the separate production project, and confirm `seed.sql` has never
+   been run against it
