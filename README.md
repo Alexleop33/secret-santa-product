@@ -14,8 +14,7 @@ open questions that gate work. Code lives in
 |---|---|
 | What's been decided | [docs/decisions.md](docs/decisions.md) |
 | What's still blocking | [docs/open-questions.md](docs/open-questions.md) |
-| Story drafts, in build order | [docs/stories.md](docs/stories.md) |
-| The next slices, and the running order | [docs/slices.md](docs/slices.md) |
+| Stories, and what's being built | [GitHub issues](https://github.com/Alexleop33/secret-santa-product/issues) |
 | What happened in run 1 | [docs/history/run-1.md](docs/history/run-1.md) |
 | How this started (period document, not current) | [docs/handoff.md](docs/handoff.md) |
 | `gh` commands | [docs/gh-cheatsheet.md](docs/gh-cheatsheet.md) |
