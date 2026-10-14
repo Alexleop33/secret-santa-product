@@ -37,14 +37,22 @@ These gate real work. Each one should become a Story, a decision in
       design, and there is no form yet. Needs a Story when the referral form
       is the slice being built, not before.
 
-- [ ] **10. What covers the family's one-time form link?**
-      Narrowed twice on 2026-10-11 and now down to one piece. Google sign-in
-      covers staff and donors; Supabase is the host and already carries magic
-      links whenever they are wanted.
-      **Families never sign in at all** — they open a one-time link, once, and
-      that is their whole relationship with the app. Supabase magic links are
-      the obvious candidate, but nothing has been decided and nothing built.
+- [ ] **10. The family's one-time form link — designed, not built.**
+      Narrowed three times. As of 2026-10-13 the design is settled: the admin
+      creates the link, it lasts **seven days from creation**, it works once,
+      and reopening a used one says so plainly. Families never sign in.
+      **What is still open is the mechanism.** Generating the token, storing a
+      hash rather than the link, enforcing single use without two clicks both
+      winning, and expiry are all still our own code — which is the half of
+      *never roll our own auth* that Google sign-in did not solve. Supabase
+      magic links remain the obvious candidate and remain undecided.
       **Blocks real referrals before Nov 6.**
+
+- [ ] **14. Microsoft as a second sign-in provider.**
+      The admin's work email is Outlook and that is what they would rather use.
+      Google works and is acceptable, so this blocks nothing today. It is a
+      Supabase dashboard change plus one button.
+      **Do it before launch, not after someone is locked out.**
 
 - [ ] **13. The Supabase MCP still has write access.**
       Added 2026-10-13 with `docs`, `database`, `debugging` and `development`

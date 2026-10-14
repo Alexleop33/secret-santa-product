@@ -673,3 +673,74 @@ latest Nov 6 — the checklist is:**
 3. Publish the Google consent screen, so sessions stop expiring weekly
 4. Create the separate production project, and confirm `seed.sql` has never
    been run against it
+
+---
+
+### 2026-10-13 · The admin creates referral links; providers never sign in
+
+From a conversation with the admin on 2026-10-13.
+
+**This reopens two decisions.** *Providers sign in with a one-time link, every
+time* (Oct 9) and the half of *Families fill in the form themselves* (Oct 10)
+that had a provider creating and emailing the link. Both are replaced.
+
+**What happens instead:** the admin creates a referral link and sends it out. A
+provider may forward that link to a family, but the provider does that in their
+own email client. **A provider is not a user of this system.** Some are not
+comfortable with copy-paste, so the admin expects to send some links directly
+to families.
+
+**What this removes, which is most of the remaining Nov 6 risk:**
+
+- **Provider sign-in, and every provider screen.** P0 and P1 do not get built.
+- **The provider role.** `profiles.role` holds `admin` and nothing else for v1.
+- **Provider-scoped RLS** — "a provider sees only their own referrals" has no
+  caller. One fewer policy, and one fewer denial test.
+- **Referral attribution.** `households.referred_by` and any provider
+  reference on `form_links` are dropped. Nothing in the app records who
+  referred a household.
+
+Provider login was the most blocked item on the Nov 6 list. It is gone.
+
+**What it costs, named rather than discovered later:** a provider asking "did
+my referral come through?" cannot be answered by the app. The admin answers it
+from their own records — the same arrangement already in place for the
+household code to family mapping, which has never lived in this system either.
+
+**On who the admin is:** there is exactly one admin account and who holds it is
+not a design input at this stage. This does not change
+[question 12](open-questions.md), which is about who reviews and signs off.
+
+---
+
+### 2026-10-13 · Family form links last 7 days, and say so once used
+
+Settles what *Providers sign in with a one-time link* left open on Oct 9, where
+link lifetime was explicitly unpicked.
+
+- **Seven days**, and the clock starts when the link is **created**, not when
+  it is first opened.
+- **One use.** Once the form is submitted the link is dead.
+- **Reopening a used link shows "this link has already been used."** A plain
+  message, not an error page — the family did nothing wrong.
+- **A half-filled form is lost.** Leaving mid-form and coming back means
+  starting again. One sitting is expected. Saving progress is possible and is
+  deliberately not being built.
+
+That last point was flagged as a risk in Epic #2 and marked acceptable for v1.
+It is now accepted by the person who will field the phone call when it happens,
+which is a different and better kind of acceptance.
+
+---
+
+### 2026-10-13 · Google sign-in holds, and Microsoft is wanted before launch
+
+Not a reversal. Google remains the login, and the Oct 11 decision stands.
+
+**The confirmed gap:** the admin's work email is **Outlook**, and that is the
+address they would rather sign in with. Google is acceptable as an option, and
+this is explicitly not worth blocking progress on.
+
+Adding Microsoft is a Supabase dashboard change plus one button, exactly as
+Google was — no rework, and it can happen any time. Tracked as
+[question 14](open-questions.md) so it does not get forgotten at launch.
