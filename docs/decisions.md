@@ -857,3 +857,34 @@ form end to end.
 2026-09-20, which still holds absolutely. A phone number is contact data, the
 same category email already was — a real narrowing of a real rule, same as
 Oct 10, not a new exception.
+
+---
+
+### 2026-10-21 · Referral attribution comes back as a name, not a login — the "on behalf" path is dropped
+
+Reopens two entries: **Referral links carry a configurable number of uses**
+(2026-10-20), which added an "I'm filling this in for someone else" path with
+a private reference label, and the attribution half of **The admin creates
+referral links; providers never sign in** (2026-10-13), which dropped
+`referred_by` on the grounds that nothing in the app would record who
+referred a household.
+
+**What changes:** the referral form goes back to one path — whoever opens
+the link fills it in for themselves. The on-behalf toggle, and the name
+fields it grew on the `alex/configurable-link-expiry` platform branch
+(`filler_first_name`, `submitter_first_name`), are removed rather than fixed.
+
+In its place: one optional field asking the household to name the provider
+who referred them — a therapist, case worker, or counselor, not a household
+member. It answers the question the admin can't answer today ("did this
+provider's referral come through?") without bringing back provider logins,
+provider-scoped RLS, or any provider screen.
+
+**Why now:** that branch had replaced the deliberately-not-a-name
+`submitter_label` — and the regex that warned if it looked like a real name —
+with two literal first-name fields. Neither reached the database, but the
+code sitting there was a live regression against *no family PII*.
+
+**Still open, for the Epic:** where the provider name lives (`households` vs.
+its own table) and its retention rule — the same question `household_contacts`
+already answered for email and phone, not re-litigated here.
