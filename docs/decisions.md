@@ -219,8 +219,9 @@ kind. A family email is a real departure from it.
   purge removes it with one `DELETE` that touches nothing else.
 - **Never** in a donor-facing query, never in the roster CSV, never in a URL,
   never in a log line.
-- **Email only. No phone number.** The confirmation copy cannot exist without
-  the email; nothing needs the phone.
+- ~~**Email only. No phone number.** The confirmation copy cannot exist
+  without the email; nothing needs the phone.~~ **Narrowed further on
+  2026-10-20** — see *Phone numbers join household_contacts* below.
 
 ~~**REVISION NEEDED — revisit before this holds real data.**~~ **Answered later
 the same day** — see *The family email: deleted on rejection, kept on approval*
@@ -744,3 +745,115 @@ this is explicitly not worth blocking progress on.
 Adding Microsoft is a Supabase dashboard change plus one button, exactly as
 Google was — no rework, and it can happen any time. Tracked as
 [question 14](open-questions.md) so it does not get forgotten at launch.
+
+---
+
+### 2026-10-21 · Recording five decisions made on a collaborator's fork, after the fact
+
+David Welch (`dwelch2344`), a trusted collaborator, forked the platform repo
+and built out nearly the entire v1 feature set — referral links, the family
+form, the review queue, donor browsing and claiming, the admin console,
+close-out and retention purge, plus the whole local-dev and deployment
+pipeline. That work was merged into the platform repo's `main` on 2026-10-20.
+
+**The gap this entry closes:** David flagged several of his own calls
+correctly — tagged `risk:pii`, labeled "Decided by David," one of them citing
+this exact file by name as where the line should live — but the line never
+got written here. This repo is the authoritative record regardless of which
+repo the code landed in first. The four entries below are those decisions,
+written down now, after the merge rather than before it. Going forward,
+anything at this level gets a line here *before* it ships, not after.
+
+---
+
+### 2026-10-15 · Local-only email sign-in, for development only
+
+A second sign-in path exists now, but only on a laptop's own local database:
+a Supabase CLI default "magic link" email, caught by a fake inbox (Mailpit)
+that never leaves the machine. Both hosted projects — the sandbox demo and
+whatever becomes prod — stay Google-only, unchanged from the 2026-10-11
+decision.
+
+**Why it's here at all:** a fresh clone has no Google OAuth client to test
+with, and the local loop (`npm run dev`) is meant to need no hosted account.
+
+**Why it's in this file and not just a commit message:** it's still an
+authentication change, and the plan that proposed it said explicitly that it
+needed a line here, approved by Alex, before any code. The code shipped
+first. Recorded now; no objection to the decision itself, only to the order
+it happened in.
+
+---
+
+### 2026-10-15 · Deployment: Cloudflare Pages, uploaded by GitHub Actions
+
+Resolves the "Deployment: undecided" placeholder that stood deliberately
+unfilled until a page existed to deploy. `dev` deploys to a demo site on the
+sandbox Supabase project; `main` deploys to the live site on a separate
+project, behind a human-approved gate. Each deploy is one ordered workflow —
+database migration first, site upload second — so the frontend can never get
+ahead of its own schema. Cloudflare's own Git integration stays off for that
+reason. Every console step (creating the Pages project, the Supabase
+projects, OAuth clients) is a human checklist in `docs/environments.md`; no
+agent holds a hosted credential at any point.
+
+**Separately, and still open:** the production Supabase project and the
+Cloudflare account currently live under David's personal accounts, "for now,
+transferable to Alex." That transfer hasn't happened. Until it does, the
+person who can reach the real production database isn't the admin's son —
+it's the collaborator. Tracked here because it's a fact about who holds
+access, not a decision anyone made on purpose to leave that way.
+
+---
+
+### 2026-10-16 · Admins are added by invite, not a hand-run SQL statement
+
+The first admin is seeded by a migration and promoted on their first Google
+sign-in. Every admin after that is added from an Admins page in the console:
+an existing account is promoted at once, a new email becomes a pending
+invite that resolves the first time that address signs in. Removing the last
+admin is refused by the database. Every add, remove, invite and revoke is
+logged.
+
+**Why:** the only way to make someone an admin used to be a SQL statement
+typed by hand against the live database — fine for one person, not a real
+mechanism for mom to hand off a second pair of hands, or to take it away.
+
+**What this touches:** `profiles.role`, a new `admin_invites` table, and four
+`security definer` functions that all insist on `is_admin()` first. Break-glass
+(the hand-run statement) stays as the fallback for exactly one case: the very
+first admin, if the seeded invite is ever mistyped or lost.
+
+---
+
+### 2026-10-20 · Referral links carry a configurable number of uses
+
+A single link can now be used by up to 1,000 households instead of exactly
+one, with a count the admin chooses at creation. The form also asks who is
+filling it in — the household itself, or someone referring on their behalf —
+and an on-behalf submitter may leave a short private reference so the
+coordinator can tell referrals apart. Refusals (used, expired, unknown token)
+never burn a use.
+
+**Why:** a provider forwarding one link to several families was always the
+expected shape; the one-time-link decision from Oct 10 modeled only the
+simplest case.
+
+---
+
+### 2026-10-20 · Phone numbers join household_contacts
+
+Narrows *Families fill in the form themselves* (2026-10-10) further. A
+household's own phone number is now stored alongside its email in
+`household_contacts`, with a preferred-contact-channel flag. Same handling as
+the email it joins: admin-only, never in a donor-facing query or the roster
+CSV, deleted on rejection or withdrawal.
+
+**Why:** email-only turned out not to match how referring households
+actually prefer to be reached, per the collaborator who built the referral
+form end to end.
+
+**What this is not:** a reopening of the household name/address ban from
+2026-09-20, which still holds absolutely. A phone number is contact data, the
+same category email already was — a real narrowing of a real rule, same as
+Oct 10, not a new exception.
