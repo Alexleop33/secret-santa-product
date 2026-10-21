@@ -912,3 +912,33 @@ dwelch-fork entry above said would get caught earlier next time.
   PII fix, so it traces to its own criteria instead of someone else's.
 - **Donor wording** ("sponsor" → "donor"). Cosmetic. Carried over as-is,
   no Story needed.
+
+---
+
+### 2026-10-21 · The "no family PII" rule gets one narrow, named exception: a first name
+
+**Reopening a locked decision — stated plainly, per CLAUDE.md's own rule for
+doing so.** Until today, *no family PII, ever* meant no names of any kind for
+a referred household. It still means no last names, no addresses, no photos.
+What changes: the form now collects the **first name only** of whoever fills
+it in, alongside their email or phone.
+
+**Why this is narrower than it sounds:** the on-behalf path was removed the
+same day (see the entries above), so there is exactly one person this first
+name can ever belong to — the household itself. This isn't a side door back
+to collecting a provider's or a stranger's name; it's the household's own
+first name, nothing more, and nothing it wasn't already going to give the
+admin a way to reach them anyway.
+
+**Why at all:** so the admin can address a real person — "Hi Jamie" rather
+than "Dear household #14" — when relaying something back. Decided directly
+by Alex, not derived from an open question.
+
+**What keeps the blast radius the same as it already is for email and
+phone:** the first name lives in `household_contacts`, next to them —
+admin-only, never in a donor-facing query, never in the roster CSV, deleted
+on rejection or withdrawal. One more column in the table already built for
+exactly this purpose, not a new exposure surface.
+
+**What does not change:** no last name, no address, no photos — all still
+absolute. This is one named field, not a crack in the rule.

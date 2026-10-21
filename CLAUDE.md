@@ -66,8 +66,13 @@ claiming does not open until after Nov 6, so it can land two weeks later.
 
 Do not reopen these without saying plainly that you are reopening them:
 
-- **No family PII.** No names, addresses, or phone numbers for referred
-  households, ever. This removes most of the project's risk.
+- **No family PII, with one narrow, named exception.** No last names, no
+  addresses, for referred households, ever. As of 2026-10-21, the form
+  collects the **first name only** of whoever fills it in — always the
+  household itself, since there's no on-behalf path — alongside their
+  email/phone, with the same admin-only handling as the rest of
+  `household_contacts`. See [docs/decisions.md](docs/decisions.md),
+  2026-10-21, for why and what still doesn't change.
 - **Both repos are public, on purpose.** It's a forcing function: if it would
   be embarrassing in a public repo, the system shouldn't hold it. Nothing
   scary in source control — no real data, no secrets, no prod dumps. Sandbox
