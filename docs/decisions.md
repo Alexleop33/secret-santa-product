@@ -942,3 +942,32 @@ exactly this purpose, not a new exposure surface.
 
 **What does not change:** no last name, no address, no photos — all still
 absolute. This is one named field, not a crack in the rule.
+
+---
+
+### 2026-10-21 · The two dropped privacy hints get written back in
+
+The same branch dropped two sentences that told the family who sees their
+information, without a decision behind either cut — casualties of the form's
+sections being reorganized, not choices anyone made on purpose.
+
+- The story hint used to end: *"The coordinator reads this before anyone
+  else does, and step 5 lets you keep it from sponsors."* Gone — the hint
+  now only says to leave out names, schools, and street names.
+- The contact section used to say: *"Give one or both. Only the coordinator
+  can see these — never sponsors, never the public list."* Gone entirely —
+  nothing on the form currently tells the family their contact info is
+  admin-only.
+
+**Resolution: both come back**, in this page's own wording ("donors," not
+"sponsors" — see the entry above) and without a hardcoded step number, since
+the sections have already been renumbered twice this week:
+
+- Story hint adds back: *"The coordinator reads this before anyone else
+  does, and the consent section below lets you keep it from donors."*
+- Contact section adds back: *"Only the coordinator can see these — never
+  donors, never the public list."*
+
+**Why restore rather than leave it:** silence on who sees what isn't a design
+choice this project wants to make by accident. Folded into Epic #10, since
+it's the same form section already being touched.
