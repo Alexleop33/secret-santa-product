@@ -888,3 +888,27 @@ code sitting there was a live regression against *no family PII*.
 **Still open, for the Epic:** where the provider name lives (`households` vs.
 its own table) and its retention rule — the same question `household_contacts`
 already answered for email and phone, not re-litigated here.
+
+---
+
+### 2026-10-21 · The link-expiry commit gets split by outcome, documented before any of it ships
+
+Builds on the entry above. The same commit that added the name fields
+(`alex/configurable-link-expiry`, `ad0a004`, co-authored with a Claude Code
+session in the platform window) bundled two more changes in with it, neither
+of which had a line here before the commit landed — the exact gap the
+dwelch-fork entry above said would get caught earlier next time.
+
+- **A coordinator-only note field.** Markup only — never wired to
+  `readForm()` or the database, so nothing has been stored by it yet. Folded
+  into Epic #10 alongside the attribution fix, since it's the same form
+  section, and it needs the same free-text guard (no phone numbers,
+  addresses, or emails) that `summary` and `story` already get before it's
+  wired up for real.
+- **Configurable link expiry.** The admin chooses 1–90 days at link creation
+  instead of a fixed seven. Already fully built — migration, RPC change, UI,
+  a passing test — and has nothing to do with who fills in the form or what
+  they're asked. Gets its own Story and Epic rather than riding along with a
+  PII fix, so it traces to its own criteria instead of someone else's.
+- **Donor wording** ("sponsor" → "donor"). Cosmetic. Carried over as-is,
+  no Story needed.
