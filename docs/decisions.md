@@ -1008,3 +1008,62 @@ in it.
 **Revisit:** if the CSV export's audience ever widens past the coordinator
 herself (a second volunteer, a shared drive folder), since a first name now
 leaves the admin-only table in a file that can be copied anywhere.
+
+---
+
+### 2026-11-13 · The Project Connection client's full name is collected and stored — admin-only, and never exported
+
+**Reopening a locked decision — stated plainly, per CLAUDE.md's own rule for
+doing so.** This is the third narrowing of *No family PII in the system*
+(2026-09-20) and the second to touch names. The 2026-10-21 entry allowed
+exactly one first name and said last names were "still absolute." That is no
+longer true: the referral form's new **Client Name (Project Connection)** box
+collects a client's **first and last name**, and it is stored.
+
+**What it is:** the name Project Connection already uses to identify the
+client in its own case records — not a new description of the household. The
+nonprofit asked for it so a referral can be matched back to the client file on
+their side; today nothing in a referral can be tied to the record the
+caseworker is already holding. Requested by the organisation and decided by
+Alex on 2026-11-13, off the Nov 12 mockup review.
+
+**Note what this means, since the mockup is explicit about it:** the client is
+the person receiving services, and the mockup's own note says that is the
+child, with the parent filling in the form. So in the common case this is a
+**child's full name** — the sharpest single piece of data this system has ever
+held. Nothing below is a formality.
+
+**Where it lives:** `household_contacts`, beside the email, phone and first
+name — admin-only, visible only on the coordinator's own screens, deleted when
+a referral is rejected or withdrawn, and inside the Feb 12 retention purge.
+The same table and the same handling that was built for exactly this purpose.
+
+**It is NOT in the roster CSV export, and that is the decision, not an
+oversight.** The 2026-11-03 entry above lets the household's first name and
+the provider's name into that export; this name does **not** join them and
+that entry is not extended. The reason, named at the time it was asked for:
+row-level security makes the database refuse the wrong reader, and that
+protection ends the moment a file reaches someone's Downloads folder. An
+exported sheet can be emailed, synced or copied anywhere, and the Feb 12
+purge cannot reach it. "Visible only to the administrator" is a guarantee
+the app can keep and a spreadsheet cannot — so the full name stays inside
+the app, where the guarantee is real. A first name plus the provider already
+lets the coordinator match a row back to a family by hand, which is all the
+export exists for.
+
+**Enforced the same way as 2026-11-03:** the CSV export handler selects its
+columns by name, never a bare `household_contacts (*)` embed, and the
+regression test that reads the handler's own source must fail if this column
+ever appears in it. That test is what keeps this entry true a month from now.
+
+**What does not change:** no addresses, no photos, no last name for anyone
+else. The household's own contact remains first-name-only. This is one more
+named field with the strictest handling in the system, not a general opening.
+
+**Still open, for the Epic:** whether the field is required — is every
+referred household a Project Connection client? — and whether one referral
+can carry more than one client, for siblings. Both come from the mockup's own
+notes and neither is settled here.
+
+**Revisit:** if anyone other than the coordinator is ever given an admin
+account, since this name becomes visible to them the moment they have one.
