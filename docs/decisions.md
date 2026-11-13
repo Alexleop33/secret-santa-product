@@ -857,3 +857,40 @@ form end to end.
 2026-09-20, which still holds absolutely. A phone number is contact data, the
 same category email already was — a real narrowing of a real rule, same as
 Oct 10, not a new exception.
+
+---
+
+### 2026-11-03 · First name and provider narrow the roster CSV's no-PII rule
+
+Narrows the CSV-export clause of *No family PII in the system* (2026-09-20)
+and the *never... a CSV export* line carried into the platform's
+`household_contacts` lockdown (2026-10-21). Two fields only — the
+household's own first name (`household_first_name`) and the referring
+provider's name (`referral_source`) — may now appear in the coordinator's
+roster CSV export, alongside the five columns (`id`, `household`, `status`,
+`sponsor`, `updated`) it already carries.
+
+**Why:** the roster CSV export exists as this project's declared failure
+mode — *The app must never be the single point of failure* (2026-09-20) —
+and mom needs to be able to work from the exported spreadsheet alone if the
+app goes down mid-drive. A sheet of reference codes and statuses with no
+name or provider on it doesn't let her match a row back to the right family
+by hand once the on-screen dashboard isn't there to fall back on.
+
+**What stays excluded, unchanged:** email, phone, contact-is/guardian
+status, the coordinator note, and any last name, child's name, or address —
+none of them were asked for here. They stay inside `household_contacts`,
+admin-only, never exported, never in a donor-facing view, exactly as the
+2026-10-21 contact-lockdown entry describes. This is a narrowing of one
+specific clause, not a reopening of the table.
+
+**Where it's enforced:** the dashboard's CSV export handler selects
+`household_first_name` and `referral_source` by name, never a bare
+`household_contacts (*)` embed or `select("*")`, so the column list stays
+an explicit, reviewable allow-list. A regression test reads the handler's
+own source and fails if anything else from `household_contacts` shows up
+in it.
+
+**Revisit:** if the CSV export's audience ever widens past the coordinator
+herself (a second volunteer, a shared drive folder), since a first name now
+leaves the admin-only table in a file that can be copied anywhere.
