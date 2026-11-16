@@ -1063,7 +1063,125 @@ named field with the strictest handling in the system, not a general opening.
 **Still open, for the Epic:** whether the field is required — is every
 referred household a Project Connection client? — and whether one referral
 can carry more than one client, for siblings. Both come from the mockup's own
-notes and neither is settled here.
+notes and neither is settled here. **Both settled 2026-11-16, below.**
 
 **Revisit:** if anyone other than the coordinator is ever given an admin
 account, since this name becomes visible to them the moment they have one.
+
+---
+
+### 2026-11-15 · The free-text guard warns instead of refusing — a change to shipped behaviour, not a description of it
+
+Resolves [question 9](open-questions.md). The call itself was made on
+**2026-10-11** — *soft warning, not a hard block* — and recorded only in a
+comment on closed Story #1, which is why question 9 has read "nothing is
+decided and nothing is built" for five weeks.
+
+**What the code actually does today, checked before writing this:**
+`submit_referral` runs `identifying_text_problem()` over the submitted text
+and, on a match, does `raise exception 'Please take out %: the coordinator
+can reach you by email instead.'` The database **refuses the submit.** So the
+2026-10-11 decision was made and the opposite shipped — probably because the
+fork's work landed in between and nobody was holding the two against each
+other. This entry is therefore a **change order**, not a transcription.
+
+**The rule, going forward:** when a free-text box holds something shaped like
+a street address, a phone number, or an email, the family is shown what was
+found and can fix it — **and can still submit.**
+
+**Which fields it covers:** all of them, exactly as shipped — `summary`,
+`story`, the coordinator note, every name field (`household_first_name`,
+`referral_source`, and the Project Connection client name), and each member's
+needs, would-love, clothing and shoe sizes. An earlier draft of this entry
+said the guard should skip the name fields; that was wrong and is corrected
+here. The guard looks for addresses, phones and emails — **not** for names —
+so running it across a name box costs nothing and catches an address typed
+into the wrong field.
+
+**Why warn and not refuse:** a bad pattern match must never stop a real family
+asking for help, and there is nobody for them to appeal to. A false positive
+costs a warning; a false block costs a family.
+
+**The cost, and it is a real one:** the server-side refusal is currently the
+*only* thing enforcing this. Softening it to a warning means the database
+accepts whatever is sent, so the admin's review screen stops being a backstop
+and becomes the single check. Worth building the warning well — the family
+should see plainly what was found and where — because nothing after it will
+catch anything. Catching a *school* or employer name was never in scope and
+stays the admin's judgement on the publish screen.
+
+**Revisit:** after the first real referrals, if what families actually type
+turns out to be nothing like what the patterns look for.
+
+---
+
+### 2026-11-15 · The coordinator note is deleted on rejection, like everything else the family typed
+
+Extends **The family email: deleted on rejection, kept on approval**
+(2026-10-10) to a table it never reached, and closes the "its retention rule"
+clause left open in **Referral attribution comes back as a name**
+(2026-10-21).
+
+**What was actually happening, checked against the schema:** the two fields
+sat on opposite sides of a line nobody drew. `referral_source` — who referred
+the household — was added as a column on `household_contacts`, so it was
+already deleted on rejection and withdrawal, inheriting the 2026-10-10 rule
+for free. The coordinator note is `households.family_note`, which that rule
+never covered, so it survived a rejection and sat there until the Feb 12
+purge. An accident of which table each field landed in, not a choice.
+
+**Decided:** the note is treated the same way as the rest of what the family
+typed. On rejection or withdrawal it is **deleted**, alongside the contact
+row. A declined referral leaves behind the household shell and its status,
+and nothing a family wrote.
+
+**Why:** the note is a free-typing box, so it holds whatever a family decided
+to put there, and the entry above softens the only guard on it from a refusal
+to a warning. Keeping that prose for months on a referral already declined is
+holding writing with no purpose — the same reasoning 2026-10-10 used for the
+email, applied to the field that escaped it.
+
+**What this costs:** the provider's name goes too, so "did that counsellor's
+referral come through?" cannot be answered for a rejected household. Accepted
+— it was already the behaviour for `referral_source`, and this entry only
+makes it deliberate.
+
+**Build note:** `referral_source` needs nothing. `family_note` needs adding to
+the rejection path, with a test that rejects a referral and asserts the note
+is gone — not merely that a trigger exists.
+
+---
+
+### 2026-11-16 · The client name is required, and there is exactly one per referral
+
+Closes both questions left open in **The Project Connection client's full
+name** (2026-11-13), which is the entry that permits this field at all.
+
+- **Required.** Every referral must carry a client name, and the form will
+  not submit without one. The premise is that every referred household is a
+  Project Connection client.
+- **Exactly one, not a list.** One name, one column, as the mockup draws it.
+  A household with two clients is either reconciled by the coordinator on her
+  own side or submitted as two referrals.
+
+**Say the consequence out loud, because "required" changes the posture:** a
+child's full name is now **mandatory** for every referral this drive takes.
+An optional field would have meant the system merely *tolerated* a last name;
+a required one means it cannot accept a referral without it. That is a bigger
+step than 2026-11-13 described, and it is taken deliberately — the nonprofit's
+reason for the field is matching every referral to a case record, and a field
+filled most of the time wouldn't do that, because nobody can tell a blank from
+an oversight.
+
+**The first thing that breaks:** a household that genuinely has no Project
+Connection client cannot submit at all. There is no path past it and no one
+for them to appeal to — the same asymmetry that made the text guard a warning
+instead of a refusal. If a referral ever gets stuck here, this is the line to
+revisit.
+
+**Build note:** one `not null` column with a length check, enforced in the
+browser too so the family sees the requirement before submitting rather than
+after. Single client means no repeating block and no cardinality in the
+schema.
+
+**Revisit:** the moment a referral is turned away for having no client name.

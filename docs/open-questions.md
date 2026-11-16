@@ -29,14 +29,6 @@ These gate real work. Each one should become a Story, a decision in
       already written to skip the Project step cleanly until the permission is
       there, so running it twice is safe.
 
-- [ ] **9. How does the referral form stop PII being typed in?**
-      Falls out of the public-repo decision. Policy isn't enough — a
-      provider in a hurry will put "Maria, 412 Oak St" in a notes field
-      unless the form makes that awkward. Field design, placeholders,
-      validation. **Nothing is decided and nothing is built** — this is form
-      design, and there is no form yet. Needs a Story when the referral form
-      is the slice being built, not before.
-
 - [ ] **10. The family's one-time form link — designed, not built.**
       Narrowed three times. As of 2026-10-13 the design is settled: the admin
       creates the link, it lasts **seven days from creation**, it works once,
@@ -75,6 +67,21 @@ These gate real work. Each one should become a Story, a decision in
       **Decide before the first Story reaches UAT.**
 
 ## Resolved
+
+- [x] **9. How does the referral form stop PII being typed in?** → **It warns;
+      it does not refuse.** When any submitted text — the summary, the story,
+      the coordinator note, the name fields, or a member's sizes and wishes —
+      holds something shaped like an address, phone number or email, the
+      family is shown what was found and can still submit. A false positive
+      costs a warning; a false block costs a family, and there is nobody for
+      them to appeal to.
+
+      **This is a change, not a description.** The call was made 2026-10-11 in
+      a comment on closed Story #1 and never written down; meanwhile the code
+      shipped the opposite — `submit_referral` raises an exception and the
+      database refuses the insert. Softening it also removes the only
+      enforcement, which makes the admin's review screen the single check
+      rather than a backstop. See [decisions.md](decisions.md), 2026-11-15.
 
 - [x] **2. Gifts or cash?** → **Gifts. The app never handles money.**
       No Stripe link, no card data, no cash. Donors buy and drop off.
